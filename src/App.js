@@ -5,6 +5,8 @@ export default function LeaderboardViewer() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedYearAcc, setSelectedYearAcc] = useState("");
+  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [leaderboardType, setLeaderboardType] = useState(""); // 'year' or 'accumulative'
   const correctPassword = "123";
 
   const handleSubmit = (e) => {
@@ -16,21 +18,46 @@ export default function LeaderboardViewer() {
     }
   };
 
-  const handleViewLeaderboard = (type) => {
-    if (type === 'year') {
+  const handleViewLeaderboard = async (type) => {
+  try {
+    let year, url;
+
+    if (type === "year") {
       if (!selectedYear) {
         alert("Please select a year");
         return;
       }
-      alert(`Fetching leaderboard for ${selectedYear}`);
-    } else if (type === 'accumulative') {
+      year = selectedYear;
+      url = `http://web-production-481a5.up.railway.app/api/leaderboard/year/${year}`;
+    } else if (type === "accumulative") {
       if (!selectedYearAcc) {
         alert("Please select a year");
         return;
       }
-      alert(`Fetching accumulative leaderboard for ${selectedYearAcc}`);
+      year = selectedYearAcc;
+      url = `http://web-production-481a5.up.railway.app/api/leaderboard/accumulative/${year}`;
+    } else {
+      alert("Invalid leaderboard type");
+      return;
     }
-  };
+
+    const response = await fetch(url, { method: "GET" });
+    if (!response.ok) throw new Error("Failed to fetch leaderboard");
+
+    const data = await response.json();
+
+    console.log(`${type === "year" ? "Year-specific" : "Accumulative"} leaderboard:`, data);
+
+    // Update state to render leaderboard in UI
+    setLeaderboardData(data);
+    setLeaderboardType(type);
+
+  } catch (error) {
+    console.error(error);
+    alert("An error occurred while fetching the leaderboard");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
@@ -57,7 +84,7 @@ export default function LeaderboardViewer() {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Card 1: Year-specific leaderboard */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
-              <h3 className="text-lg font-semibold text-center">View Leaderboard (Current)</h3>
+              <h3 className="text-lg font-semibold text-center">View Leaderboard (Current Week)</h3>
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
