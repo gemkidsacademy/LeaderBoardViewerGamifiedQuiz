@@ -117,7 +117,7 @@ export default function LeaderboardViewer() {
             </button>
           </form>
         ) : (
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col gap-6">
             {/* Card 1 */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
               <h3 className="text-lg font-semibold text-center">View Leaderboard (Current Week)</h3>
