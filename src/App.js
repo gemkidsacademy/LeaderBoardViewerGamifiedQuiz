@@ -14,6 +14,7 @@ export default function LeaderboardViewer() {
   const [leaderboardType, setLeaderboardType] = useState(""); // 'year' or 'accumulative'
   const correctPassword = "123";
 
+  // ------------------ Authentication ------------------
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password === correctPassword) {
@@ -23,6 +24,7 @@ export default function LeaderboardViewer() {
     }
   };
 
+  // ------------------ Fetch Leaderboard ------------------
   const handleViewLeaderboard = async (type) => {
     try {
       let className, day, url;
@@ -54,16 +56,31 @@ export default function LeaderboardViewer() {
       const data = await response.json();
       console.log(`${type === "year" ? "Year-specific" : "Accumulative"} leaderboard:`, data);
 
-      setLeaderboardData(data);
+      // Normalize leaderboard data
+      let entries = [];
+      if (type === "year") {
+        entries = data; // Year API returns array directly
+      } else if (type === "accumulative") {
+        entries = data.leaderboard || [];
+        // Add class_name and class_day to each row
+        entries = entries.map((e) => ({
+          ...e,
+          class_name: data.class_name,
+          class_day: data.class_day,
+        }));
+      }
+
+      setLeaderboardData(entries);
       setLeaderboardType(type);
     } catch (error) {
       console.error(error);
-      alert("Desired leader board data does not exists in the database");
+      alert("Desired leaderboard data does not exist in the database");
     }
   };
 
+  // ------------------ Render Leaderboard Table ------------------
   const renderLeaderboardTable = () => {
-    if (!leaderboardData || leaderboardData.length === 0) return null;
+    if (!leaderboardData || leaderboardData.length === 0) return <p className="text-center mt-4">No data available.</p>;
 
     return (
       <table className="w-full mt-4 border-collapse border border-gray-300">
@@ -74,8 +91,6 @@ export default function LeaderboardViewer() {
             <th className="border px-2 py-1">Class</th>
             <th className="border px-2 py-1">Day</th>
             <th className="border px-2 py-1">Score</th>
-            <th className="border px-2 py-1">Total Questions</th>
-            <th className="border px-2 py-1">Submitted At</th>
           </tr>
         </thead>
         <tbody>
@@ -86,8 +101,6 @@ export default function LeaderboardViewer() {
               <td className="border px-2 py-1">{entry.class_name}</td>
               <td className="border px-2 py-1">{entry.class_day}</td>
               <td className="border px-2 py-1">{entry.total_score}</td>
-              <td className="border px-2 py-1">{entry.total_questions}</td>
-              <td className="border px-2 py-1">{new Date(entry.submitted_at).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>
@@ -95,6 +108,7 @@ export default function LeaderboardViewer() {
     );
   };
 
+  // ------------------ Main Render ------------------
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="w-full max-w-2xl grid gap-6">
@@ -118,7 +132,7 @@ export default function LeaderboardViewer() {
           </form>
         ) : (
           <div className="flex flex-col gap-6">
-            {/* Card 1 */}
+            {/* Year-Specific Leaderboard */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
               <h3 className="text-lg font-semibold text-center">View Leaderboard (Current Week)</h3>
               <select
@@ -149,7 +163,7 @@ export default function LeaderboardViewer() {
               {leaderboardType === "year" && renderLeaderboardTable()}
             </div>
 
-            {/* Card 2 */}
+            {/* Accumulative Leaderboard */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
               <h3 className="text-lg font-semibold text-center">View Leaderboard (Accumulative)</h3>
               <select
