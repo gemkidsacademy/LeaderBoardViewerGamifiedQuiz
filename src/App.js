@@ -48,21 +48,51 @@ export default function LeaderboardViewer() {
         return;
       }
 
-      const response = await fetch(url, { method: "GET" });
+      const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch leaderboard");
 
       const data = await response.json();
-
       console.log(`${type === "year" ? "Year-specific" : "Accumulative"} leaderboard:`, data);
 
-      // Update state to render leaderboard in UI
       setLeaderboardData(data);
       setLeaderboardType(type);
-
     } catch (error) {
       console.error(error);
       alert("An error occurred while fetching the leaderboard");
     }
+  };
+
+  const renderLeaderboardTable = () => {
+    if (!leaderboardData || leaderboardData.length === 0) return null;
+
+    return (
+      <table className="w-full mt-4 border-collapse border border-gray-300">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border px-2 py-1">#</th>
+            <th className="border px-2 py-1">Student</th>
+            <th className="border px-2 py-1">Class</th>
+            <th className="border px-2 py-1">Day</th>
+            <th className="border px-2 py-1">Score</th>
+            <th className="border px-2 py-1">Total Questions</th>
+            <th className="border px-2 py-1">Submitted At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {leaderboardData.map((entry, index) => (
+            <tr key={index} className="text-center">
+              <td className="border px-2 py-1">{index + 1}</td>
+              <td className="border px-2 py-1">{entry.student_name}</td>
+              <td className="border px-2 py-1">{entry.class_name}</td>
+              <td className="border px-2 py-1">{entry.class_day}</td>
+              <td className="border px-2 py-1">{entry.total_score}</td>
+              <td className="border px-2 py-1">{entry.total_questions}</td>
+              <td className="border px-2 py-1">{new Date(entry.submitted_at).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
   };
 
   return (
@@ -88,10 +118,9 @@ export default function LeaderboardViewer() {
           </form>
         ) : (
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Card 1: Year-specific leaderboard */}
+            {/* Card 1 */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
               <h3 className="text-lg font-semibold text-center">View Leaderboard (Current Week)</h3>
-
               <select
                 value={selectedClass}
                 onChange={(e) => setSelectedClass(e.target.value)}
@@ -101,7 +130,6 @@ export default function LeaderboardViewer() {
                 <option value="Year 1">Year 1</option>
                 <option value="Year 2">Year 2</option>
               </select>
-
               <select
                 value={selectedDay}
                 onChange={(e) => setSelectedDay(e.target.value)}
@@ -111,19 +139,19 @@ export default function LeaderboardViewer() {
                 <option value="Monday">Monday</option>
                 <option value="Friday">Friday</option>
               </select>
-
               <button
-                onClick={() => handleViewLeaderboard('year')}
+                onClick={() => handleViewLeaderboard("year")}
                 className="w-full p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 mt-4"
               >
                 View Leaderboard
               </button>
+
+              {leaderboardType === "year" && renderLeaderboardTable()}
             </div>
 
-            {/* Card 2: Accumulative leaderboard */}
+            {/* Card 2 */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
               <h3 className="text-lg font-semibold text-center">View Leaderboard (Accumulative)</h3>
-
               <select
                 value={selectedClassAcc}
                 onChange={(e) => setSelectedClassAcc(e.target.value)}
@@ -133,7 +161,6 @@ export default function LeaderboardViewer() {
                 <option value="Year 1">Year 1</option>
                 <option value="Year 2">Year 2</option>
               </select>
-
               <select
                 value={selectedDayAcc}
                 onChange={(e) => setSelectedDayAcc(e.target.value)}
@@ -143,13 +170,14 @@ export default function LeaderboardViewer() {
                 <option value="Monday">Monday</option>
                 <option value="Friday">Friday</option>
               </select>
-
               <button
-                onClick={() => handleViewLeaderboard('accumulative')}
+                onClick={() => handleViewLeaderboard("accumulative")}
                 className="w-full p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 mt-4"
               >
                 View Leaderboard
               </button>
+
+              {leaderboardType === "accumulative" && renderLeaderboardTable()}
             </div>
           </div>
         )}
