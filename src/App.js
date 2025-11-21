@@ -19,7 +19,7 @@ export default function LeaderboardViewer() {
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
         {!isAuthenticated ? (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <h2 className="text-xl font-semibold text-center">Enter Password</h2>
+            <h2 className="text-xl font-semibold text-center">Leadership Board Gem Kids Academy</h2>
             <input
               type="password"
               value={password}
@@ -36,9 +36,13 @@ export default function LeaderboardViewer() {
             </button>
           </form>
         ) : (
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <h2 className="text-2xl font-bold text-green-600">Welcome!</h2>
             <p className="mt-2 text-gray-700">You have successfully unlocked this page.</p>
+            <div className="flex flex-col space-y-3 mt-4">
+              <button className="w-full p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700">View Leader Board Year 1</button>
+              <button className="w-full p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700">View Leader Board Year 2</button>
+            </div>
           </div>
         )}
       </div>
