@@ -4,6 +4,7 @@ export default function LeaderboardViewer() {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
+  const [selectedYearAcc, setSelectedYearAcc] = useState("");
   const correctPassword = "123";
 
   const handleSubmit = (e) => {
@@ -16,15 +17,18 @@ export default function LeaderboardViewer() {
   };
 
   const handleViewLeaderboard = (type) => {
-    if (!selectedYear && type !== 'accumulative') {
-      alert("Please select a year");
-      return;
-    }
-    // TODO: Call backend API to fetch leaderboard
-    if(type === 'accumulative') {
-      alert(`Fetching accumulative leaderboard`);
-    } else {
+    if (type === 'year') {
+      if (!selectedYear) {
+        alert("Please select a year");
+        return;
+      }
       alert(`Fetching leaderboard for ${selectedYear}`);
+    } else if (type === 'accumulative') {
+      if (!selectedYearAcc) {
+        alert("Please select a year");
+        return;
+      }
+      alert(`Fetching accumulative leaderboard for ${selectedYearAcc}`);
     }
   };
 
@@ -74,6 +78,15 @@ export default function LeaderboardViewer() {
             {/* Card 2: Accumulative leaderboard */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
               <h3 className="text-lg font-semibold text-center">View Leaderboard (Accumulative)</h3>
+              <select
+                value={selectedYearAcc}
+                onChange={(e) => setSelectedYearAcc(e.target.value)}
+                className="w-full p-3 border rounded-xl focus:outline-none mt-4"
+              >
+                <option value="">Select Year</option>
+                <option value="Year 1">Year 1</option>
+                <option value="Year 2">Year 2</option>
+              </select>
               <button
                 onClick={() => handleViewLeaderboard('accumulative')}
                 className="w-full p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 mt-4"
