@@ -3,8 +3,13 @@ import { useState } from "react";
 export default function LeaderboardViewer() {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedYearAcc, setSelectedYearAcc] = useState("");
+
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedDay, setSelectedDay] = useState("");
+
+  const [selectedClassAcc, setSelectedClassAcc] = useState("");
+  const [selectedDayAcc, setSelectedDayAcc] = useState("");
+
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [leaderboardType, setLeaderboardType] = useState(""); // 'year' or 'accumulative'
   const correctPassword = "123";
@@ -19,45 +24,46 @@ export default function LeaderboardViewer() {
   };
 
   const handleViewLeaderboard = async (type) => {
-  try {
-    let year, url;
+    try {
+      let className, day, url;
 
-    if (type === "year") {
-      if (!selectedYear) {
-        alert("Please select a year");
+      if (type === "year") {
+        if (!selectedClass || !selectedDay) {
+          alert("Please select class and day");
+          return;
+        }
+        className = selectedClass;
+        day = selectedDay;
+        url = `https://web-production-481a5.up.railway.app/api/leaderboard/year/${className}?day=${day}`;
+      } else if (type === "accumulative") {
+        if (!selectedClassAcc || !selectedDayAcc) {
+          alert("Please select class and day");
+          return;
+        }
+        className = selectedClassAcc;
+        day = selectedDayAcc;
+        url = `https://web-production-481a5.up.railway.app/api/leaderboard/accumulative/${className}?day=${day}`;
+      } else {
+        alert("Invalid leaderboard type");
         return;
       }
-      year = selectedYear;
-      url = `https://web-production-481a5.up.railway.app/api/leaderboard/year/${year}`;
-    } else if (type === "accumulative") {
-      if (!selectedYearAcc) {
-        alert("Please select a year");
-        return;
-      }
-      year = selectedYearAcc;
-      url = `https://web-production-481a5.up.railway.app/api/leaderboard/accumulative/${year}`;
-    } else {
-      alert("Invalid leaderboard type");
-      return;
+
+      const response = await fetch(url, { method: "GET" });
+      if (!response.ok) throw new Error("Failed to fetch leaderboard");
+
+      const data = await response.json();
+
+      console.log(`${type === "year" ? "Year-specific" : "Accumulative"} leaderboard:`, data);
+
+      // Update state to render leaderboard in UI
+      setLeaderboardData(data);
+      setLeaderboardType(type);
+
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while fetching the leaderboard");
     }
-
-    const response = await fetch(url, { method: "GET" });
-    if (!response.ok) throw new Error("Failed to fetch leaderboard");
-
-    const data = await response.json();
-
-    console.log(`${type === "year" ? "Year-specific" : "Accumulative"} leaderboard:`, data);
-
-    // Update state to render leaderboard in UI
-    setLeaderboardData(data);
-    setLeaderboardType(type);
-
-  } catch (error) {
-    console.error(error);
-    alert("An error occurred while fetching the leaderboard");
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
@@ -84,16 +90,28 @@ export default function LeaderboardViewer() {
           <div className="flex flex-col md:flex-row gap-6">
             {/* Card 1: Year-specific leaderboard */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
-              <h3 className="text-lg font-semibold text-center">View Leaderboard      (Current Week)</h3>
+              <h3 className="text-lg font-semibold text-center">View Leaderboard (Current Week)</h3>
+
               <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
                 className="w-full p-3 border rounded-xl focus:outline-none mt-4"
               >
-                <option value="">Select Year</option>
+                <option value="">Select Class</option>
                 <option value="Year 1">Year 1</option>
                 <option value="Year 2">Year 2</option>
               </select>
+
+              <select
+                value={selectedDay}
+                onChange={(e) => setSelectedDay(e.target.value)}
+                className="w-full p-3 border rounded-xl focus:outline-none mt-4"
+              >
+                <option value="">Select Day</option>
+                <option value="Monday">Monday</option>
+                <option value="Friday">Friday</option>
+              </select>
+
               <button
                 onClick={() => handleViewLeaderboard('year')}
                 className="w-full p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 mt-4"
@@ -105,15 +123,27 @@ export default function LeaderboardViewer() {
             {/* Card 2: Accumulative leaderboard */}
             <div className="bg-white p-6 rounded-2xl shadow-xl w-full">
               <h3 className="text-lg font-semibold text-center">View Leaderboard (Accumulative)</h3>
+
               <select
-                value={selectedYearAcc}
-                onChange={(e) => setSelectedYearAcc(e.target.value)}
+                value={selectedClassAcc}
+                onChange={(e) => setSelectedClassAcc(e.target.value)}
                 className="w-full p-3 border rounded-xl focus:outline-none mt-4"
               >
-                <option value="">Select Year</option>
+                <option value="">Select Class</option>
                 <option value="Year 1">Year 1</option>
                 <option value="Year 2">Year 2</option>
               </select>
+
+              <select
+                value={selectedDayAcc}
+                onChange={(e) => setSelectedDayAcc(e.target.value)}
+                className="w-full p-3 border rounded-xl focus:outline-none mt-4"
+              >
+                <option value="">Select Day</option>
+                <option value="Monday">Monday</option>
+                <option value="Friday">Friday</option>
+              </select>
+
               <button
                 onClick={() => handleViewLeaderboard('accumulative')}
                 className="w-full p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 mt-4"
