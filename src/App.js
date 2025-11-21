@@ -58,7 +58,7 @@ export default function LeaderboardViewer() {
       setLeaderboardType(type);
     } catch (error) {
       console.error(error);
-      alert("An error occurred while fetching the leaderboard");
+      alert("Desired leader board data does not exists in the database");
     }
   };
 
