@@ -28,14 +28,14 @@ export default function LeaderboardViewer() {
         return;
       }
       year = selectedYear;
-      url = `http://web-production-481a5.up.railway.app/api/leaderboard/year/${year}`;
+      url = `https://web-production-481a5.up.railway.app/api/leaderboard/year/${year}`;
     } else if (type === "accumulative") {
       if (!selectedYearAcc) {
         alert("Please select a year");
         return;
       }
       year = selectedYearAcc;
-      url = `http://web-production-481a5.up.railway.app/api/leaderboard/accumulative/${year}`;
+      url = `https://web-production-481a5.up.railway.app/api/leaderboard/accumulative/${year}`;
     } else {
       alert("Invalid leaderboard type");
       return;
