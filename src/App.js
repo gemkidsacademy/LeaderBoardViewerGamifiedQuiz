@@ -141,8 +141,15 @@ export default function LeaderboardViewer() {
                 className="w-full p-3 border rounded-xl focus:outline-none mt-4"
               >
                 <option value="">Select Class</option>
+                <option value="Selective">Selective</option>
+                <option value="Kindergarten">Kindergarten</option>
                 <option value="Year 1">Year 1</option>
                 <option value="Year 2">Year 2</option>
+                <option value="Year 3">Year 3</option>
+                <option value="Year 4">Year 4</option>
+                <option value="Year 5">Year 5</option>
+                <option value="Year 6">Year 6</option>
+                  
               </select>
               <select
                 value={selectedDay}
